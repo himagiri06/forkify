@@ -5,17 +5,19 @@
     "default": "index.html",
     "scripts": {
         "start": "parcel index.html",
-        "build": "parcel build index.html --dist-dir ./dist"
+        "build": "parcel build index.html --dist-dir ./dist",
+        "serve": "serve -s dist"
     },
     "author": "Himagiri L B",
     "license": "ISC",
     "dependencies": {
         "core-js": "^3.37.1",
-        "fractional": "^1.0.0",
+        "fraction.js": "^4.3.7",
         "parcel": "^2.12.0",
         "regenerator-runtime": "^0.14.1"
     },
     "devDependencies": {
-        "@parcel/transformer-sass": "^2.12.0"
+        "@parcel/transformer-sass": "^2.12.0",
+        "serve": "^14.2.3"
     }
 }

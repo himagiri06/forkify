@@ -1,19 +1,19 @@
 import ContainerView from './containerView';
 
 import icons from 'url:../../img/icons.svg';
-import { Fraction } from 'fractional';
+import Fraction from '../../../node_modules/fraction.js';
 
 class RecipeView extends ContainerView {
-  _parentElement = document.querySelector('.recipe');
-  #errorMessage = 'We could not find the recipe! Please try another one.';
-  #message = '';
+    _parentElement = document.querySelector('.recipe');
+    #errorMessage = 'We could not find the recipe! Please try another one.';
+    #message = '';
 
-  addHandlerRender(handler) {
-    ['hashchange', 'load'].forEach(ev => window.addEventListener(ev, handler));
-  }
+    addHandlerRender(handler) {
+        ['hashchange', 'load'].forEach(ev => window.addEventListener(ev, handler));
+    }
 
-  _generateMarkup() {
-    return `
+    _generateMarkup() {
+        return `
     <figure class="recipe__fig">
           <img src="${this._data.image}" alt="${this._data.title}" class="recipe__img" />
           <h1 class="recipe__title">
@@ -51,10 +51,10 @@ class RecipeView extends ContainerView {
           </div>
 
           ${
-            this._data.key
-              ? `<button class="btn--delete"> Delete
+              this._data.key
+                  ? `<button class="btn--delete"> Delete
           </button>`
-              : ''
+                  : ''
           }
           <div class="recipe__user-generated ${this._data.key ? '' : 'hidden'}">
             <svg>
@@ -96,10 +96,10 @@ class RecipeView extends ContainerView {
           </a>
         </div>
     `;
-  }
+    }
 
-  _generateMarkupIngredient(ing) {
-    return `
+    _generateMarkupIngredient(ing) {
+        return `
       <li class="recipe__ingredient">
         <svg class="recipe__icon">
           <use href="${icons}#icon-check"></use>
@@ -111,43 +111,43 @@ class RecipeView extends ContainerView {
         </div>
       </li>
     `;
-  }
+    }
 
-  addHandlerUpdateServings(handler) {
-    this._parentElement.addEventListener(
-      'click',
-      function (e) {
-        const btn = e.target.closest('.btn--tiny');
-        if (!btn) return;
+    addHandlerUpdateServings(handler) {
+        this._parentElement.addEventListener(
+            'click',
+            function (e) {
+                const btn = e.target.closest('.btn--tiny');
+                if (!btn) return;
 
-        const servings = +btn.dataset.updateTo;
+                const servings = +btn.dataset.updateTo;
 
-        if (servings > 0) handler?.(servings);
-      }.bind(this)
-    );
-  }
+                if (servings > 0) handler?.(servings);
+            }.bind(this)
+        );
+    }
 
-  addHandlerBookmark(handler) {
-    this._parentElement.addEventListener(
-      'click',
-      function (e) {
-        const btn = e.target.closest('.btn--bookmark');
-        if (!btn) return;
-        handler?.({ ...this._data, bookmarked: !this._data.bookmarked });
-      }.bind(this)
-    );
-  }
+    addHandlerBookmark(handler) {
+        this._parentElement.addEventListener(
+            'click',
+            function (e) {
+                const btn = e.target.closest('.btn--bookmark');
+                if (!btn) return;
+                handler?.({ ...this._data, bookmarked: !this._data.bookmarked });
+            }.bind(this)
+        );
+    }
 
-  addHandlerDeleteRecipe(handler) {
-    this._parentElement.addEventListener(
-      'click',
-      function (e) {
-        const btn = e.target.closest('.btn--delete');
-        if (!btn) return;
-        handler?.(this._data.id);
-      }.bind(this)
-    );
-  }
+    addHandlerDeleteRecipe(handler) {
+        this._parentElement.addEventListener(
+            'click',
+            function (e) {
+                const btn = e.target.closest('.btn--delete');
+                if (!btn) return;
+                handler?.(this._data.id);
+            }.bind(this)
+        );
+    }
 }
 
 export default new RecipeView();
