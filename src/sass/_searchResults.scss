@@ -12,20 +12,41 @@
 .pagination {
   margin-top: auto;
   padding: 0 3.5rem;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
 
-  &::after {
-    content: '';
-    display: table;
-    clear: both;
-  }
+  // &::after {
+  //   content: '';
+  //   display: table;
+  //   clear: both;
+  // }
 
   &__btn {
     &--prev {
-      float: left;
+      display: flex;
+      justify-content: start;
     }
     &--next {
-      float: right;
+      display: flex;
+      justify-content: end;
     }
+  }
+  &__details {
+    height: 3rem;
+    width: 3rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: $color-primary;
+    background-color: $color-grey-light-1;
+    border: none;
+    border-radius: 50%;
+
+    display: flex;
+    justify-self: center;
+    align-items: center;
+    justify-content: center;
   }
 }
 

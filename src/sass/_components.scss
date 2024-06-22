@@ -90,6 +90,15 @@
   }
 }
 
+.btn {
+  &--disabled {
+    opacity: 0;
+    color: $color-grey-dark-2;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
 .btn--delete {
   cursor: pointer;
   padding: 1rem 2rem;
