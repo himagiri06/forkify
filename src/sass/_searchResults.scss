@@ -34,19 +34,24 @@
     }
   }
   &__details {
-    height: 3rem;
-    width: 3rem;
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: $color-primary;
-    background-color: $color-grey-light-1;
+    font-size: 1rem;
+    font-weight: 400;
     border: none;
-    border-radius: 50%;
+    background-color: $color-grey-light-1;
+    padding: 0.8rem 1.2rem;
+    border-radius: 10rem;
 
     display: flex;
+    gap: 0.5rem;
     justify-self: center;
     align-items: center;
     justify-content: center;
+
+    &--page {
+      color: $color-grad-2;
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
   }
 }
 

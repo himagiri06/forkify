@@ -21,7 +21,7 @@ class PaginationView extends ContainerView {
     if (currPage === 1 && numPages > 1)
       return `
         ${this.#generateMarkupButton('prev', currPage + 1, { disabled: true })}
-        ${this.#generatePageNumber(currPage)}
+        ${this.#generatePageNumber(currPage, numPages)}
         ${this.#generateMarkupButton('next', currPage + 1)}
       `;
 
@@ -29,7 +29,7 @@ class PaginationView extends ContainerView {
     if (currPage === numPages && numPages > 1)
       return `
     ${this.#generateMarkupButton('prev', currPage - 1)}
-    ${this.#generatePageNumber(currPage)}
+    ${this.#generatePageNumber(currPage, numPages)}
     ${this.#generateMarkupButton('next', currPage - 1, { disabled: true })}
     `;
 
@@ -37,7 +37,7 @@ class PaginationView extends ContainerView {
     if (currPage > 1 && this._data.page < numPages)
       return `
         ${this.#generateMarkupButton('prev', currPage - 1)}
-        ${this.#generatePageNumber(currPage)}
+        ${this.#generatePageNumber(currPage, numPages)}
         ${this.#generateMarkupButton('next', currPage + 1)}
       `;
 
@@ -67,8 +67,8 @@ class PaginationView extends ContainerView {
     `;
   }
 
-  #generatePageNumber(pageNum) {
-    return `<span class="pagination__details">${pageNum}</span>`;
+  #generatePageNumber(pageNum, numPages) {
+    return `<div class="pagination__details"><span class="pagination__details--page">${pageNum}</span> / <span>${numPages}</span></div>`;
   }
   // #generateMarkupButton(type = 'next', pageNum) {
   //   if (type === 'prev')
