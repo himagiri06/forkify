@@ -1,5 +1,5 @@
 import { API_KEY, API_URL, RESULTS_PER_PAGE } from './config';
-import { getLocalStorage, setLocalStorage } from './helpers';
+import { getLocalStorage, setLocalStorage, sortArrayObjectsByProperty } from './helpers';
 import { ajax } from './apiRequest';
 
 export const state = {
@@ -7,6 +7,7 @@ export const state = {
   search: {
     query: '',
     recipes: [],
+    sortBy: 'relevance',
     page: 1,
     resultsPerPage: RESULTS_PER_PAGE,
   },
@@ -37,7 +38,6 @@ const createRecipeObject = function (data) {
     image: recipe.image_url,
     ingredients: recipe.ingredients,
     servings: recipe.servings,
-    cookingTime: recipe.cooking_time,
     ...(recipe.key && { key: recipe.key }),
   };
 };
@@ -76,14 +76,17 @@ export const loadSearchResults = async function (query) {
     state.search.query = query;
 
     const data = await ajax.read(`${API_URL}?search=${query}&key=${API_KEY}`);
-
+    // To fake the cooking time as the API does not return the cooking time in search results
+    let time = 1000000;
     state.search.recipes = data.data.recipes.map(recipe => {
+      time--;
       return {
         id: recipe.id,
         title: recipe.title,
         publisher: recipe.publisher,
         image: recipe.image_url,
         ...(recipe.key && { key: recipe.key }),
+        cookingTime: recipe.cooking_time ?? time,
       };
     });
     state.search.page = 1;
@@ -94,13 +97,19 @@ export const loadSearchResults = async function (query) {
 
 export const getSearchResultsPage = function (page = state.search.page) {
   state.search.page = page;
+  const results =
+    state.search.sortBy !== 'relevance'
+      ? sortArrayObjectsByProperty(state.search.recipes.slice(), state.search.sortBy)
+      : state.search.recipes;
   const start = (page - 1) * state.search.resultsPerPage;
   const end = page * state.search.resultsPerPage;
-  return state.search.recipes.slice(start, end);
+  return results.slice(start, end);
 };
 
 export const updateServings = function (newServings) {
-  state.recipe.ingredients.forEach(ing => (ing.quantity = (ing.quantity * newServings) / state.recipe.servings));
+  state.recipe.ingredients.forEach(
+    ing => (ing.quantity = (ing.quantity * newServings) / state.recipe.servings)
+  );
   state.recipe.servings = newServings;
 };
 
@@ -127,10 +136,15 @@ export const uploadRecipe = async function (newRecipe) {
       .filter(entry => entry[0]?.trim().startsWith('ingredient') && entry[1])
       .map(ing => {
         const ingArr = ing[1].split(',').map(str => str.trim());
-        if (ingArr.length !== 3) throw new Error('Wrong ingredient format! Please use the correct format');
+        if (ingArr.length !== 3)
+          throw new Error('Wrong ingredient format! Please use the correct format');
 
         const [quantity, unit, description] = ingArr;
-        return { quantity: quantity ? +quantity : null, unit: unit || null, description: description || null };
+        return {
+          quantity: quantity ? +quantity : null,
+          unit: unit || null,
+          description: description || null,
+        };
       });
 
     const uploadData = {
@@ -158,4 +172,9 @@ export const deleteRecipe = async function (id) {
   } catch (error) {
     throw error;
   }
+};
+
+export const getSortedSearchResultsPage = function (sortBy, page) {
+  state.search.sortBy = sortBy;
+  return getSearchResultsPage(page);
 };

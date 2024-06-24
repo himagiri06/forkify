@@ -1,14 +1,26 @@
 import 'core-js';
 import 'regenerator-runtime/runtime';
 
-import { state, loadRecipe, loadSearchResults, getSearchResultsPage, updateServings, toggleBookmark, uploadRecipe, deleteRecipe, removeRecipeBookmark } from './model.js';
+import {
+  state,
+  loadRecipe,
+  loadSearchResults,
+  getSearchResultsPage,
+  updateServings,
+  toggleBookmark,
+  uploadRecipe,
+  deleteRecipe,
+  removeRecipeBookmark,
+  getSortedSearchResultsPage,
+} from './model.js';
+import { MODAL_CLOSE_SECS } from './config.js';
 import recipeView from './views/recipeView.js';
 import searchView from './views/searchView.js';
 import resultsview from './views/resultsview.js';
 import paginationView from './views/paginationView.js';
+import resultsControlsView from './views/resultsControlsView.js';
 import bookmarksView from './views/bookmarksView.js';
 import addRecipeView from './views/addRecipeView.js';
-import { MODAL_CLOSE_SECS } from './config.js';
 
 // if (module.hot) {
 //   module.hot.accept();
@@ -26,6 +38,7 @@ function init() {
   searchView.addHandlerSearch(controlSearchResults);
   paginationView.addHandlerClick(controlPagination);
   addRecipeView.addHandlerSubmit(controlAddRecipeSubmit);
+  resultsControlsView.on('sort', controlSortResults);
 }
 
 init();
@@ -84,7 +97,11 @@ async function controlSearchResults(query) {
   try {
     if (!query && state.search.recipes.length) return;
 
-    if (!query) return resultsview.renderMessage('Enter a valid search query to display results :)');
+    if (!query)
+      return resultsview.renderMessage('Enter a valid search query to display results :)');
+
+    //
+    resultsControlsView.render(state.search, { show: false });
 
     resultsview.renderSpinner();
 
@@ -96,6 +113,10 @@ async function controlSearchResults(query) {
 
     // Render Pagination buttons on view
     paginationView.render(state.search);
+
+    // Render search results controls view
+    resultsControlsView.render(state.search, { show: Boolean(state.search.recipes?.length) });
+    //
   } catch (error) {
     console.log(error);
     resultsview.renderError('Something went wrong');
@@ -142,4 +163,9 @@ async function controlAddRecipeSubmit(recipe) {
   } catch (error) {
     addRecipeView.renderError(error.message);
   }
+}
+
+function controlSortResults(sortBy) {
+  console.log(sortBy);
+  resultsview.render(getSortedSearchResultsPage(sortBy, state.search.page));
 }

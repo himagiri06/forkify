@@ -102,3 +102,6 @@ export const getLocalStorage = function (keyName, defaultValue = '') {
   if (storage) return JSON.parse(storage);
   return defaultValue;
 };
+export function sortArrayObjectsByProperty(arr, prop) {
+  return arr.sort((a, b) => a[prop] - b[prop]);
+}

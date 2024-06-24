@@ -1,6 +1,7 @@
 import icons from 'url:../../img/icons.svg';
+import EventEmitter from '../core-modules/eventEmitter';
 
-export default class ContainerView {
+export default class ContainerView extends EventEmitter {
   /**
    * data used to generate the markup
    */
@@ -14,12 +15,12 @@ export default class ContainerView {
    * @param {boolean} [options.validate] if true, data undergoes the validation step; if false, data validatiion is skipped. Default is true. If data validation fails, Error is rendered
    * @returns {string} returns markup if render option is set to false
    */
-  render(data, options = { render: true, validate: true }) {
-    const { render, validate } = options;
+  render(data, options = {}) {
+    const { render = true, validate = true, show = true } = options;
     if ((validate && !data) || (Array.isArray(data) && data.length === 0)) return this.renderError();
 
     this._data = data;
-    const markup = this._generateMarkup();
+    const markup = show === true ? this._generateMarkup() : '';
 
     if (!render) return markup;
 
