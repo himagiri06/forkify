@@ -166,6 +166,5 @@ async function controlAddRecipeSubmit(recipe) {
 }
 
 function controlSortResults(sortBy) {
-  console.log(sortBy);
-  resultsview.render(getSortedSearchResultsPage(sortBy, state.search.page));
+  resultsview.render(getSearchResultsPage(state.search.page, sortBy));
 }

@@ -95,8 +95,12 @@ export const loadSearchResults = async function (query) {
   }
 };
 
-export const getSearchResultsPage = function (page = state.search.page) {
+export const getSearchResultsPage = function (
+  page = state.search.page,
+  sortBy = state.search.sortBy
+) {
   state.search.page = page;
+  state.search.sortBy = sortBy;
   const results =
     state.search.sortBy !== 'relevance'
       ? sortArrayObjectsByProperty(state.search.recipes.slice(), state.search.sortBy)
@@ -172,9 +176,4 @@ export const deleteRecipe = async function (id) {
   } catch (error) {
     throw error;
   }
-};
-
-export const getSortedSearchResultsPage = function (sortBy, page) {
-  state.search.sortBy = sortBy;
-  return getSearchResultsPage(page);
 };
