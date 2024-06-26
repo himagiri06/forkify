@@ -9,6 +9,7 @@ class AddRecipeView extends ContainerView {
   _btnClose = document.querySelector('.btn--close-modal');
 
   _message = 'Recipe has been uploaded successfully';
+  _errorMessage = 'Something went wrong';
 
   constructor() {
     super();
@@ -37,6 +38,22 @@ class AddRecipeView extends ContainerView {
     this._overlay.addEventListener('click', this.hideWindow.bind(this));
   }
 
+  _showValidationError() {
+    const errorEl = this._parentElement.querySelector('.upload__error');
+    if (errorEl) return;
+
+    const uploadBtn = this._parentElement.querySelector('.upload__btn');
+    const markup = this._generateValidationErrorMarkup();
+    uploadBtn.insertAdjacentHTML('beforebegin', markup);
+  }
+
+  _validateIngredientsFormat(formDataArr) {
+    return formDataArr
+      .filter(([key, value]) => key.startsWith('ingredient') && value?.trim() !== '')
+      .map(([_, value]) => value)
+      .some(ing => ing.split(',').length !== 3);
+  }
+
   addHandlerSubmit(handler) {
     this._parentElement.addEventListener(
       'submit',
@@ -44,6 +61,13 @@ class AddRecipeView extends ContainerView {
         e.preventDefault();
         const dataArr = [...new FormData(this._parentElement)];
         const data = Object.fromEntries(dataArr);
+
+        // Ingredients format validation
+        if (this._validateIngredientsFormat(dataArr)) {
+          this._errorMessage = `Incorrect ingredients format: enter the correct format - "Quantity,Unit,Description"`;
+          return this._showValidationError();
+        }
+
         handler?.(data);
       }.bind(this)
     );
@@ -109,13 +133,19 @@ class AddRecipeView extends ContainerView {
             placeholder="Format: 'Quantity,Unit,Description'"
           />
         </div>
-
         <button class="btn upload__btn">
           <svg>
             <use href="${icons}#icon-upload-cloud"></use>
           </svg>
           <span>Upload</span>
         </button>
+    `;
+  }
+  _generateValidationErrorMarkup(errorMessage = this._errorMessage) {
+    return `
+      <div class="upload__error">
+        <p class="upload__error--message">${errorMessage}</p>
+      </div>
     `;
   }
 }
