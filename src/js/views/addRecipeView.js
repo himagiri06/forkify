@@ -7,6 +7,7 @@ class AddRecipeView extends ContainerView {
   _overlay = document.querySelector('.overlay');
   _btnOpen = document.querySelector('.nav__btn--add-recipe');
   _btnClose = document.querySelector('.btn--close-modal');
+  _numIngredients = 6;
 
   _message = 'Recipe has been uploaded successfully';
   _errorMessage = 'Something went wrong';
@@ -40,7 +41,7 @@ class AddRecipeView extends ContainerView {
 
   _showValidationError() {
     const errorEl = this._parentElement.querySelector('.upload__error');
-    if (errorEl) return;
+    if (errorEl) errorEl.remove();
 
     const uploadBtn = this._parentElement.querySelector('.upload__btn');
     const markup = this._generateValidationErrorMarkup();
@@ -49,9 +50,54 @@ class AddRecipeView extends ContainerView {
 
   _validateIngredientsFormat(formDataArr) {
     return formDataArr
-      .filter(([key, value]) => key.startsWith('ingredient') && value?.trim() !== '')
+      .filter(
+        ([key, value]) => key.startsWith('ingredient') && value?.trim() !== ''
+      )
       .map(([_, value]) => value)
       .some(ing => ing.split(',').length !== 3);
+  }
+
+  _getIngredientsArray(obj) {
+    return Array.from({ length: this._numIngredients }, (_, i) => ({
+      quantity: +obj[`ingredient[${i}][quantity]`].trim() || null,
+      unit: obj[`ingredient[${i}][unit]`].trim() || null,
+      description: obj[`ingredient[${i}][description]`].trim() || null,
+    }));
+  }
+
+  _validateIngredients(ingredients) {
+    const validationResult = { pass: true };
+
+    for (const [index, ingredient] of ingredients.entries()) {
+      if (ingredient.unit && !ingredient.quantity) {
+        validationResult.pass = false;
+        validationResult.index = index;
+        validationResult.field = 'quantity';
+        validationResult.message = 'unit is specified without quantity';
+        break;
+      }
+
+      if (ingredient.quantity && !ingredient.description) {
+        validationResult.pass = false;
+        validationResult.index = index;
+        validationResult.field = 'description';
+        validationResult.message = 'missing escription of ingredient';
+        break;
+      }
+    }
+    return validationResult;
+  }
+
+  // Final form data object construction
+  _constructFormDataJSON(formObject, ingredients) {
+    return {
+      ...Object.fromEntries(
+        Object.entries(formObject).filter(
+          ([key, value]) => !key.startsWith('ingredient')
+        )
+      ),
+      ingredients,
+    };
   }
 
   addHandlerSubmit(handler) {
@@ -59,14 +105,38 @@ class AddRecipeView extends ContainerView {
       'submit',
       function (e) {
         e.preventDefault();
-        const dataArr = [...new FormData(this._parentElement)];
-        const data = Object.fromEntries(dataArr);
 
-        // Ingredients format validation
-        if (this._validateIngredientsFormat(dataArr)) {
-          this._errorMessage = `Incorrect ingredients format: enter the correct format - "Quantity,Unit,Description"`;
+        this._parentElement
+          .querySelectorAll('.error')
+          .forEach(el => el.classList.remove('error'));
+
+        const formEntries = [...new FormData(this._parentElement)];
+        const formObject = Object.fromEntries(formEntries);
+        const ingredientEntries = this._getIngredientsArray(formObject);
+
+        const { pass, index, field, message } =
+          this._validateIngredients(ingredientEntries);
+
+        if (!pass) {
+          const errorEl = this._parentElement.querySelector(
+            `input[name='ingredient[${index}][${field}]']`
+          );
+          errorEl?.classList.add('error');
+
+          this._errorMessage = `Invalid entry: ${message}`;
           return this._showValidationError();
         }
+
+        const ingredients = ingredientEntries.filter(
+          ing => ing.quantity || ing.unit || ing.description
+        );
+
+        if (ingredients.length === 0) {
+          this._errorMessage = 'Ingredients cannot be empty';
+          return this._showValidationError();
+        }
+
+        const data = this._constructFormDataJSON(formObject, ingredients);
 
         handler?.(data);
       }.bind(this)
@@ -90,48 +160,11 @@ class AddRecipeView extends ContainerView {
           <input value="23" required name="servings" type="number" />
         </div>
 
-        <div class="upload__column">
+        <div class="upload__column ingredients">
           <h3 class="upload__heading">Ingredients</h3>
-          <label>Ingredient 1</label>
-          <input
-            value="0.5,kg,Rice"
-            type="text"
-            required
-            name="ingredient-1"
-            placeholder="Format: 'Quantity,Unit,Description'"
-          />
-          <label>Ingredient 2</label>
-          <input
-            value="1,,Avocado"
-            type="text"
-            name="ingredient-2"
-            placeholder="Format: 'Quantity,Unit,Description'"
-          />
-          <label>Ingredient 3</label>
-          <input
-            value=",,salt"
-            type="text"
-            name="ingredient-3"
-            placeholder="Format: 'Quantity,Unit,Description'"
-          />
-          <label>Ingredient 4</label>
-          <input
-            type="text"
-            name="ingredient-4"
-            placeholder="Format: 'Quantity,Unit,Description'"
-          />
-          <label>Ingredient 5</label>
-          <input
-            type="text"
-            name="ingredient-5"
-            placeholder="Format: 'Quantity,Unit,Description'"
-          />
-          <label>Ingredient 6</label>
-          <input
-            type="text"
-            name="ingredient-6"
-            placeholder="Format: 'Quantity,Unit,Description'"
-          />
+          ${Array.from({ length: this._numIngredients }, (_, i) =>
+            this._generateIngredientGroupMarkup(i)
+          ).join('')}
         </div>
         <button class="btn upload__btn">
           <svg>
@@ -139,6 +172,35 @@ class AddRecipeView extends ContainerView {
           </svg>
           <span>Upload</span>
         </button>
+    `;
+  }
+  _gnereateIngredientsMarkup() {
+    return `
+      ${Array.from({ length: this._numIngredients }, (_, i) =>
+        this._generateIngredientGroupMarkup(i)
+      ).join('')}
+    `;
+  }
+  _generateIngredientGroupMarkup(id) {
+    return `
+      <div class="ingredient__row">
+        <label>${id + 1}</label>
+        <input
+          type="text"
+          name="ingredient[${id}][quantity]"
+          placeholder="Quantity"
+        />
+        <input
+          type="text"
+          name="ingredient[${id}][unit]"
+          placeholder="Unit"
+        />
+        <input
+          type="text"
+          name="ingredient[${id}][description]"
+          placeholder="Description"
+        />
+      </div>
     `;
   }
   _generateValidationErrorMarkup(errorMessage = this._errorMessage) {

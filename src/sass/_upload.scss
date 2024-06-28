@@ -75,12 +75,28 @@
         border: 1px solid $color-primary;
         background-color: $color-grey-light-1;
       }
+      &.error {
+        border: 1px solid $color-danger;
+      }
     }
 
     & button {
       grid-column: 1 / span 2;
       justify-self: center;
       margin-top: 1rem;
+    }
+
+    &.ingredients {
+      grid-template-columns: 1fr;
+
+      & .ingredient {
+        &__row {
+          display: flex;
+          flex-direction: row;
+          gap: 1rem;
+          align-items: center;
+        }
+      }
     }
   }
 
@@ -104,3 +120,12 @@
     justify-self: center;
   }
 }
+
+// .ingredient {
+//   &__row {
+//     display: flex;
+//     flex-direction: row;
+//     gap: 1rem;
+//     align-items: center;
+//   }
+// }
