@@ -68,7 +68,6 @@ function controlMain() {
 
 async function controlRecipe(id) {
   try {
-    console.log(id);
     // Update results view to mark selected recipe
     resultsview.update(getSearchResultsPage());
 
@@ -100,7 +99,6 @@ async function controlRecipeDelete(id) {
     bookmarksView.render(state.bookmarks);
     window.history.back();
   } catch (error) {
-    console.error(error);
     recipeView.renderError(error.message);
   }
 }
@@ -142,7 +140,6 @@ async function controlSearchResults(query) {
     });
     //
   } catch (error) {
-    console.log(error);
     resultsview.renderError('Something went wrong');
   }
 }
