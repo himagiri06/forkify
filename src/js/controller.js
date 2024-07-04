@@ -21,6 +21,8 @@ import paginationView from './views/paginationView.js';
 import resultsControlsView from './views/resultsControlsView.js';
 import bookmarksView from './views/bookmarksView.js';
 import addRecipeView from './views/addRecipeView.js';
+import defaultMainview from './views/defaultMainView.js';
+import pageNotFoundView from './views/pageNotFoundView.js';
 
 // if (module.hot) {
 //   module.hot.accept();
@@ -31,24 +33,42 @@ import addRecipeView from './views/addRecipeView.js';
  */
 function init() {
   bookmarksView.addHandlerWindowLoad(controlBookmarksOnWindowLoad);
-  recipeView.addHandlerRender(controlRecipe);
+  bookmarksView.addHandlerClickPreview(controlRecipe);
+  recipeView.addHandlerRender(controlMain);
   recipeView.addHandlerDeleteRecipe(controlRecipeDelete);
   recipeView.addHandlerUpdateServings(controlServings);
   recipeView.addHandlerBookmark(controlBookmark);
   searchView.addHandlerSearch(controlSearchResults);
   paginationView.addHandlerClick(controlPagination);
   addRecipeView.addHandlerSubmit(controlAddRecipeSubmit);
+  resultsview.addHandlerClickPreview(controlRecipe);
   resultsControlsView.on('sort', controlSortResults);
 }
 
 init();
 
-async function controlRecipe() {
-  try {
+function controlMain() {
+  let pathName = window.location.pathname;
+
+  // Fixing route
+  if (pathName.length > 1 && pathName.endsWith('/')) {
+    pathName = pathName.slice(0, -1);
+    window.location.replace(pathName);
+  }
+
+  // Route handling
+  if (pathName === '/') return defaultMainview.renderMessage();
+  if (pathName === '/recipes') {
     const id = window.location.hash.slice(1);
+    if (!id) return window.location.replace('/');
+    return controlRecipe(id);
+  }
+  pageNotFoundView.renderError();
+}
 
-    if (!id) return;
-
+async function controlRecipe(id) {
+  try {
+    console.log(id);
     // Update results view to mark selected recipe
     resultsview.update(getSearchResultsPage());
 
@@ -65,8 +85,8 @@ async function controlRecipe() {
 
     // update bookmarks view to mark selected recipe
     bookmarksView.update(state.bookmarks);
-  } catch (error) {
-    recipeView.renderError(error.message);
+  } catch (err) {
+    recipeView.renderError(err.message);
     removeRecipeBookmark(state.error.recipeID);
     bookmarksView.render(state.bookmarks);
   }
@@ -98,7 +118,9 @@ async function controlSearchResults(query) {
     if (!query && state.search.recipes.length) return;
 
     if (!query)
-      return resultsview.renderMessage('Enter a valid search query to display results :)');
+      return resultsview.renderMessage(
+        'Enter a valid search query to display results :)'
+      );
 
     //
     resultsControlsView.render(state.search, { show: false });
@@ -115,7 +137,9 @@ async function controlSearchResults(query) {
     paginationView.render(state.search);
 
     // Render search results controls view
-    resultsControlsView.render(state.search, { show: Boolean(state.search.recipes?.length) });
+    resultsControlsView.render(state.search, {
+      show: Boolean(state.search.recipes?.length),
+    });
     //
   } catch (error) {
     console.log(error);
