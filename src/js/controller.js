@@ -21,7 +21,7 @@ import paginationView from './views/paginationView.js';
 import resultsControlsView from './views/resultsControlsView.js';
 import bookmarksView from './views/bookmarksView.js';
 import addRecipeView from './views/addRecipeView.js';
-import defaultMainview from './views/defaultMainView.js';
+import messageView from './views/messageView.js';
 import pageNotFoundView from './views/pageNotFoundView.js';
 
 // if (module.hot) {
@@ -57,7 +57,7 @@ function controlMain() {
   }
 
   // Route handling
-  if (pathName === '/') return defaultMainview.renderMessage();
+  if (pathName === '/') return messageView.renderMessage();
   if (pathName === '/recipes') {
     const id = window.location.hash.slice(1);
     if (!id) return window.location.replace('/');

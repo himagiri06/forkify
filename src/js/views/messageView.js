@@ -1,6 +1,6 @@
 import ContainerView from './containerView';
 
-class DefaultMainView extends ContainerView {
+class MessageView extends ContainerView {
   _parentElement = document.querySelector('.main');
   _message = 'Start by searching for a recipe or an ingredient. Have fun!';
 
@@ -11,4 +11,4 @@ class DefaultMainView extends ContainerView {
   // }
 }
 
-export default new DefaultMainView();
+export default new MessageView();
