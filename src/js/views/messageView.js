@@ -1,6 +1,6 @@
-import ContainerView from './containerView';
+import View from './view';
 
-class MessageView extends ContainerView {
+class MessageView extends View {
   _parentElement = document.querySelector('.main');
   _message = 'Start by searching for a recipe or an ingredient. Have fun!';
 

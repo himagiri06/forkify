@@ -1,7 +1,7 @@
-import ContainerView from './containerView';
+import View from './view';
 import icons from 'url:../../img/icons.svg';
 
-class PaginationView extends ContainerView {
+class PaginationView extends View {
   _parentElement = document.querySelector('.pagination');
 
   addHandlerClick(handler) {
@@ -15,7 +15,9 @@ class PaginationView extends ContainerView {
   _generateMarkup() {
     const currPage = this._data.page;
 
-    const numPages = Math.ceil(this._data.recipes.length / this._data.resultsPerPage);
+    const numPages = Math.ceil(
+      this._data.recipes.length / this._data.resultsPerPage
+    );
 
     //  Page 1 - more results available
     if (currPage === 1 && numPages > 1)
@@ -49,7 +51,9 @@ class PaginationView extends ContainerView {
     const { disabled = false } = options;
     if (type === 'prev')
       return `
-      <button class="btn--inline pagination__btn--prev ${disabled ? 'btn--disabled' : ''}" data-goto="${pageNum}">
+      <button class="btn--inline pagination__btn--prev ${
+        disabled ? 'btn--disabled' : ''
+      }" data-goto="${pageNum}">
             <svg class="search__icon">
               <use href="${icons}#icon-arrow-left"></use>
             </svg>
@@ -58,7 +62,9 @@ class PaginationView extends ContainerView {
     `;
 
     return `
-      <button class="btn--inline pagination__btn--next ${disabled ? 'btn--disabled' : ''}" data-goto="${pageNum}">
+      <button class="btn--inline pagination__btn--next ${
+        disabled ? 'btn--disabled' : ''
+      }" data-goto="${pageNum}">
             <span>Next</span>
             <svg class="search__icon">
               <use href="${icons}#icon-arrow-right"></use>

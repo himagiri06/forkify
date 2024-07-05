@@ -1,7 +1,7 @@
 import icons from 'url:../../img/icons.svg';
 import EventEmitter from '../core-modules/eventEmitter';
 
-export default class ContainerView extends EventEmitter {
+export default class View extends EventEmitter {
   /**
    * data used to generate the markup
    */
@@ -17,7 +17,8 @@ export default class ContainerView extends EventEmitter {
    */
   render(data, options = {}) {
     const { render = true, validate = true, show = true } = options;
-    if ((validate && !data) || (Array.isArray(data) && data.length === 0)) return this.renderError();
+    if ((validate && !data) || (Array.isArray(data) && data.length === 0))
+      return this.renderError();
 
     this._data = data;
     const markup = show === true ? this._generateMarkup() : '';
@@ -44,7 +45,10 @@ export default class ContainerView extends EventEmitter {
       const curEl = curElements[i];
 
       // updates changed TEXT
-      if (!newEl.isEqualNode(curEl) && newEl.firstChild?.nodeValue.trim() !== '') {
+      if (
+        !newEl.isEqualNode(curEl) &&
+        newEl.firstChild?.nodeValue.trim() !== ''
+      ) {
         curEl.textContent = newEl.textContent;
       }
 

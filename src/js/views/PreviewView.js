@@ -1,7 +1,7 @@
-import ContainerView from './containerView';
+import View from './view';
 import icons from 'url:../../img/icons.svg';
 
-class PreviewView extends ContainerView {
+class PreviewView extends View {
   _parentElement = '';
 
   _generateMarkup() {

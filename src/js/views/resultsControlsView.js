@@ -1,6 +1,6 @@
-import ContainerView from './containerView';
+import View from './view';
 
-class ResultsControlsView extends ContainerView {
+class ResultsControlsView extends View {
   _parentElement = document.querySelector('.results-controls');
 
   constructor() {

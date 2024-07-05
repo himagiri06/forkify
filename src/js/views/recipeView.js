@@ -1,9 +1,9 @@
-import ContainerView from './containerView';
+import View from './view';
 
 import icons from 'url:../../img/icons.svg';
 import Fraction from '../../../node_modules/fraction.js';
 
-class RecipeView extends ContainerView {
+class RecipeView extends View {
   _parentElement = document.querySelector('.main');
   #errorMessage = 'We could not find the recipe! Please try another one.';
   #message = '';

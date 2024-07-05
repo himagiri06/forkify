@@ -1,6 +1,6 @@
-import ContainerView from './containerView';
+import View from './view';
 
-export class ListView extends ContainerView {
+export class ListView extends View {
   addHandlerClickPreview(handler) {
     this._parentElement.addEventListener('click', function (e) {
       e.preventDefault();
