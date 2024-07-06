@@ -2,11 +2,12 @@ import View from './view';
 import icons from 'url:../../img/icons.svg';
 
 class AddRecipeView extends View {
-  _parentElement = document.querySelector('.upload');
-  _window = document.querySelector('.add-recipe-window');
-  _overlay = document.querySelector('.overlay');
-  _btnOpen = document.querySelector('.nav__btn--add-recipe');
-  _btnClose = document.querySelector('.btn--close-modal');
+  _parentElement = document.querySelector('.main');
+  _form = document.querySelector('.upload');
+  // _window = document.querySelector('.add-recipe-window');
+  // _overlay = document.querySelector('.overlay');
+  // _btnOpen = document.querySelector('.nav__btn--add-recipe');
+  // _btnClose = document.querySelector('.btn--close-modal');
   _numIngredients = 6;
 
   _message = 'Recipe has been uploaded successfully';
@@ -15,29 +16,30 @@ class AddRecipeView extends View {
   constructor() {
     super();
     this.render(null, true, false);
-    this._addHandlerShowWindow();
-    this._addHandlerHideWindow();
+    console.log(this._form);
+    // this._addHandlerShowWindow();
+    // this._addHandlerHideWindow();
   }
 
-  showWindow() {
-    this.render(null, { render: true, validate: false });
-    this._window.classList.remove('hidden');
-    this._overlay.classList.remove('hidden');
-  }
+  // showWindow() {
+  //   this.render(null, { render: true, validate: false });
+  //   this._window.classList.remove('hidden');
+  //   this._overlay.classList.remove('hidden');
+  // }
 
-  hideWindow() {
-    this._window.classList.add('hidden');
-    this._overlay.classList.add('hidden');
-  }
+  // hideWindow() {
+  //   this._window.classList.add('hidden');
+  //   this._overlay.classList.add('hidden');
+  // }
 
-  _addHandlerShowWindow() {
-    this._btnOpen.addEventListener('click', this.showWindow.bind(this));
-  }
+  // _addHandlerShowWindow() {
+  //   this._btnOpen.addEventListener('click', this.showWindow.bind(this));
+  // }
 
-  _addHandlerHideWindow() {
-    this._btnClose.addEventListener('click', this.hideWindow.bind(this));
-    this._overlay.addEventListener('click', this.hideWindow.bind(this));
-  }
+  // _addHandlerHideWindow() {
+  //   this._btnClose.addEventListener('click', this.hideWindow.bind(this));
+  //   this._overlay.addEventListener('click', this.hideWindow.bind(this));
+  // }
 
   _showValidationError() {
     const errorEl = this._parentElement.querySelector('.upload__error');
@@ -106,11 +108,13 @@ class AddRecipeView extends View {
       function (e) {
         e.preventDefault();
 
-        this._parentElement
+        const form = document.querySelector('.upload');
+
+        form
           .querySelectorAll('.error')
           .forEach(el => el.classList.remove('error'));
 
-        const formEntries = [...new FormData(this._parentElement)];
+        const formEntries = [...new FormData(form)];
         const formObject = Object.fromEntries(formEntries);
         const ingredientEntries = this._getIngredientsArray(formObject);
 
@@ -142,38 +146,85 @@ class AddRecipeView extends View {
       }.bind(this)
     );
   }
+  // _generateMarkup() {
+  //   return `
+  //   <div class="add-recipe">
+  //     <h2>Add recipe form</h2>
+  //     <form class="upload">
+  //       <div class="upload__column">
+  //         <h3 class="upload__heading">Recipe data</h3>
+  //         <label>Title</label>
+  //         <input value="TEST 23" required name="title" type="text" />
+  //         <label>URL</label>
+  //         <input value="TEST 23" required name="sourceUrl" type="text" />
+  //         <label>Image URL</label>
+  //         <input value="TEST 23" required name="image" type="text" />
+  //         <label>Publisher</label>
+  //         <input value="TEST 23" required name="publisher" type="text" />
+  //         <label>Prep time</label>
+  //         <input value="23" required name="cookingTime" type="number" />
+  //         <label>Servings</label>
+  //         <input value="23" required name="servings" type="number" />
+  //       </div>
+  //       <div class="upload__column ingredients">
+  //         <h3 class="upload__heading">Ingredients</h3>
+  //         ${Array.from({ length: this._numIngredients }, (_, i) =>
+  //           this._generateIngredientGroupMarkup(i)
+  //         ).join('')}
+  //       </div>
+  //     </form>
+  //   </div>
+  //   `;
+  // }
+  setFocus(inputName) {
+    const inputEl = this._parentElement.querySelector(
+      `input[name="${inputName}"]`
+    );
+    if (inputEl) {
+      inputEl.focus();
+      const length = inputEl.value.length;
+      inputEl.setSelectionRange(length, length);
+    }
+  }
+
   _generateMarkup() {
     return `
-        <div class="upload__column">
-          <h3 class="upload__heading">Recipe data</h3>
-          <label>Title</label>
-          <input value="TEST 23" required name="title" type="text" />
-          <label>URL</label>
-          <input value="TEST 23" required name="sourceUrl" type="text" />
-          <label>Image URL</label>
-          <input value="TEST 23" required name="image" type="text" />
-          <label>Publisher</label>
-          <input value="TEST 23" required name="publisher" type="text" />
-          <label>Prep time</label>
-          <input value="23" required name="cookingTime" type="number" />
-          <label>Servings</label>
-          <input value="23" required name="servings" type="number" />
-        </div>
+      <div class="add-recipe">
+        <h2 class="page-title">ADD RECIPE</h2>
+        <form class="upload">
+          <div class="upload__column">
+            <h3 class="upload__heading">Recipe data</h3>
+            <label>Title</label>
+            <input value="TEST 23" required name="title" type="text" />
+            <label>URL</label>
+            <input value="TEST 23" required name="sourceUrl" type="text" />
+            <label>Image URL</label>
+            <input value="TEST 23" required name="image" type="text" />
+            <label>Publisher</label>
+            <input value="TEST 23" required name="publisher" type="text" />
+            <label>Prep time</label>
+            <input value="23" required name="cookingTime" type="number" />
+            <label>Servings</label>
+            <input value="23" required name="servings" type="number" />
+          </div>
 
-        <div class="upload__column ingredients">
-          <h3 class="upload__heading">Ingredients</h3>
-          ${Array.from({ length: this._numIngredients }, (_, i) =>
-            this._generateIngredientGroupMarkup(i)
-          ).join('')}
-        </div>
-        <button class="btn upload__btn">
-          <svg>
-            <use href="${icons}#icon-upload-cloud"></use>
-          </svg>
-          <span>Upload</span>
-        </button>
+          <div class="upload__column ingredients">
+            <h3 class="upload__heading">Ingredients</h3>
+            ${Array.from({ length: this._numIngredients }, (_, i) =>
+              this._generateIngredientGroupMarkup(i)
+            ).join('')}
+          </div>
+          <button class="btn upload__btn">
+            <svg>
+              <use href="${icons}#icon-upload-cloud"></use>
+            </svg>
+            <span>Upload</span>
+          </button>
+        </form>
+      </div>
     `;
   }
+
   _gnereateIngredientsMarkup() {
     return `
       ${Array.from({ length: this._numIngredients }, (_, i) =>

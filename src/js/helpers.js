@@ -1,8 +1,19 @@
 import { API_TIMEOUT_SECONDS } from './config';
 
-export const timeout = function (s) {
-  return new Promise((_, reject) => setTimeout(() => reject(new Error(`Request took too long! Timeout after ${s} second`)), s * 1000));
+export const timeout = function (seconds) {
+  return new Promise((_, reject) =>
+    setTimeout(
+      () =>
+        reject(
+          new Error(`Request took too long! Timeout after ${seconds} second`)
+        ),
+      seconds * 1000
+    )
+  );
 };
+
+export const wait = seconds =>
+  new Promise((resolve, reject) => setTimeout(() => resolve(), seconds * 1000));
 
 // export const AJAX = async function (url, payload = null) {
 //   try {

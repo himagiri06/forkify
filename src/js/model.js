@@ -9,6 +9,7 @@ import { ajax } from './apiRequest';
 export const state = {
   recipe: {},
   search: {
+    searched: false,
     query: '',
     recipes: [],
     sortBy: 'relevance',
@@ -79,6 +80,7 @@ export const loadRecipe = async function (id) {
  */
 export const loadSearchResults = async function (query) {
   try {
+    state.search.searched = true;
     state.search.query = query;
 
     const data = await ajax.read(`${API_URL}?search=${query}&key=${API_KEY}`);

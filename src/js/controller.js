@@ -11,18 +11,17 @@ import {
   uploadRecipe,
   deleteRecipe,
   removeRecipeBookmark,
-  getSortedSearchResultsPage,
 } from './model.js';
-import { MODAL_CLOSE_SECS } from './config.js';
 import recipeView from './views/recipeView.js';
 import searchView from './views/searchView.js';
-import resultsview from './views/resultsview.js';
+import resultsView from './views/resultsView.js';
 import paginationView from './views/paginationView.js';
 import resultsControlsView from './views/resultsControlsView.js';
 import bookmarksView from './views/bookmarksView.js';
 import addRecipeView from './views/addRecipeView.js';
 import messageView from './views/messageView.js';
 import pageNotFoundView from './views/pageNotFoundView.js';
+import { wait } from './helpers.js';
 
 // if (module.hot) {
 //   module.hot.accept();
@@ -31,51 +30,97 @@ import pageNotFoundView from './views/pageNotFoundView.js';
 /**
  * Initializes the app - Starting point of the app
  */
+
 function init() {
   bookmarksView.addHandlerWindowLoad(controlBookmarksOnWindowLoad);
-  bookmarksView.addHandlerClickPreview(controlRecipe);
-  recipeView.addHandlerRender(controlMain);
   recipeView.addHandlerDeleteRecipe(controlRecipeDelete);
   recipeView.addHandlerUpdateServings(controlServings);
   recipeView.addHandlerBookmark(controlBookmark);
   searchView.addHandlerSearch(controlSearchResults);
   paginationView.addHandlerClick(controlPagination);
   addRecipeView.addHandlerSubmit(controlAddRecipeSubmit);
-  resultsview.addHandlerClickPreview(controlRecipe);
   resultsControlsView.on('sort', controlSortResults);
+  document.body.addEventListener('click', controlLinkClick);
+  window.addEventListener('popstate', router);
+  router();
 }
 
 init();
 
-function controlMain() {
-  let pathName = window.location.pathname;
+function controlLinkClick(e) {
+  const routeLink = e.target.closest('[data-link]');
+  if (!routeLink) return;
 
-  // Fixing route
-  if (pathName.length > 1 && pathName.endsWith('/')) {
-    pathName = pathName.slice(0, -1);
-    window.location.replace(pathName);
+  e.preventDefault();
+
+  const href = routeLink.href || routeLink.querySelector('[href]')?.href;
+
+  if (!href) return;
+
+  if (location.href === href) return;
+
+  navigateTo(href);
+}
+
+function navigateTo(url) {
+  history.pushState(null, null, url);
+  router();
+}
+
+function router() {
+  const routes = [
+    {
+      path: '/',
+      controller: controlHome,
+    },
+    {
+      path: '/recipes',
+      controller: controlRecipe,
+    },
+    {
+      path: '/add-recipe',
+      controller: controlAddRecipe,
+    },
+    {
+      path: '*',
+      controller: controlPageNotFound,
+    },
+  ];
+
+  const matchedRoutes = routes.map(route => ({
+    route,
+    isMatch: route.path === location.pathname,
+  }));
+
+  let match = matchedRoutes.find(matchedRoute => matchedRoute.isMatch);
+
+  if (!match) {
+    match = { route: routes.at(-1), isMatch: true };
   }
 
-  // Route handling
-  if (pathName === '/') return messageView.renderMessage();
-  if (pathName === '/recipes') {
-    const id = window.location.hash.slice(1);
-    if (!id) return window.location.replace('/');
-    return controlRecipe(id);
-  }
-  pageNotFoundView.renderError();
+  match.route.controller?.();
+}
+
+function controlHome() {
+  if (!state.search.recipes.length) return messageView.renderMessage();
+
+  bookmarksView.removeActive();
+  resultsView.removeActive();
+  messageView.renderMessage('Click on any recipe in the search results');
 }
 
 async function controlRecipe(id) {
+  const recipeId = location.hash?.slice(1);
+
   try {
     // Update results view to mark selected recipe
-    resultsview.update(getSearchResultsPage());
+    resultsView.render(getSearchResultsPage());
 
     // Rendering Spinner
     recipeView.renderSpinner();
 
     // Loading recipe
-    await loadRecipe(id);
+    await loadRecipe(recipeId);
 
     const { recipe } = state;
 
@@ -83,7 +128,7 @@ async function controlRecipe(id) {
     recipeView.render(recipe);
 
     // update bookmarks view to mark selected recipe
-    bookmarksView.update(state.bookmarks);
+    bookmarksView.render(state.bookmarks);
   } catch (err) {
     recipeView.renderError(err.message);
     removeRecipeBookmark(state.error.recipeID);
@@ -97,7 +142,6 @@ async function controlRecipeDelete(id) {
     await deleteRecipe(id);
     recipeView.renderMessage('Recipe has been deleted successfully :)');
     bookmarksView.render(state.bookmarks);
-    window.history.back();
   } catch (error) {
     recipeView.renderError(error.message);
   }
@@ -116,20 +160,20 @@ async function controlSearchResults(query) {
     if (!query && state.search.recipes.length) return;
 
     if (!query)
-      return resultsview.renderMessage(
+      return resultsView.renderMessage(
         'Enter a valid search query to display results :)'
       );
 
     //
     resultsControlsView.render(state.search, { show: false });
 
-    resultsview.renderSpinner();
+    resultsView.renderSpinner();
 
     // Load search results from API
     await loadSearchResults(query);
 
     // Render search results on view
-    resultsview.render(getSearchResultsPage());
+    resultsView.render(getSearchResultsPage());
 
     // Render Pagination buttons on view
     paginationView.render(state.search);
@@ -140,12 +184,12 @@ async function controlSearchResults(query) {
     });
     //
   } catch (error) {
-    resultsview.renderError('Something went wrong');
+    resultsView.renderError('Something went wrong');
   }
 }
 
 function controlPagination(goToPage) {
-  resultsview.render(getSearchResultsPage(goToPage));
+  resultsView.render(getSearchResultsPage(goToPage));
   paginationView.render(state.search);
 }
 
@@ -159,6 +203,13 @@ function controlBookmarksOnWindowLoad() {
   bookmarksView.render(state.bookmarks);
 }
 
+function controlAddRecipe() {
+  bookmarksView.removeActive();
+  resultsView.removeActive();
+  addRecipeView.render(null, { validate: false });
+  addRecipeView.setFocus('title');
+}
+
 async function controlAddRecipeSubmit(recipe) {
   try {
     // render spinner in recipe view
@@ -168,24 +219,30 @@ async function controlAddRecipeSubmit(recipe) {
     await uploadRecipe(recipe);
 
     // Render newly added recipe
-    recipeView.render(state.recipe);
+    // recipeView.render(state.recipe);
 
     // Success message
     addRecipeView.renderMessage();
 
-    setTimeout(function () {
-      addRecipeView.hideWindow();
-    }, MODAL_CLOSE_SECS * 1000);
+    // setTimeout(function () {
+    //   addRecipeView.hideWindow();
+    // }, MODAL_CLOSE_SECS * 1000);
 
     bookmarksView.render(state.bookmarks);
 
+    // Navigate to new recipe page after 2 seconds
+    await wait(2).then(() => navigateTo(`/recipes#${state.recipe.id}`));
     // Change ID in url
-    window.history.pushState(null, '', `#${state.recipe.id}`);
+    // window.history.pushState(null, '', `#${state.recipe.id}`);
   } catch (error) {
     addRecipeView.renderError(error.message);
   }
 }
 
 function controlSortResults(sortBy) {
-  resultsview.render(getSearchResultsPage(state.search.page, sortBy));
+  resultsView.render(getSearchResultsPage(state.search.page, sortBy));
+}
+
+function controlPageNotFound() {
+  pageNotFoundView.renderError();
 }

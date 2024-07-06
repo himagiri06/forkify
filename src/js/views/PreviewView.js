@@ -8,10 +8,10 @@ class PreviewView extends View {
     const id = window.location.hash.slice(1);
 
     return `
-    <li class="preview" data-id="${this._data.id}">
+      <li class="preview" data-id="${this._data.id}" data-link>
             <a class="preview__link ${
               this._data.id === id ? 'preview__link--active' : ''
-            }">
+            }" href="/recipes#${this._data.id}">
               <figure class="preview__fig">
                 <img src="${this._data.image}" alt="${this._data.title}" />
               </figure>

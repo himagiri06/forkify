@@ -1,4 +1,4 @@
-import { ListView } from './listView';
+import ListView from './listView';
 import previewView from './PreviewView';
 
 class BookmarksView extends ListView {

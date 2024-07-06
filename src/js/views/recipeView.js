@@ -8,9 +8,9 @@ class RecipeView extends View {
   #errorMessage = 'We could not find the recipe! Please try another one.';
   #message = '';
 
-  addHandlerRender(handler) {
-    ['hashchange', 'load'].forEach(ev => window.addEventListener(ev, handler));
-  }
+  // addHandlerRender(handler) {
+  //   ['hashchange', 'load'].forEach(ev => window.addEventListener(ev, handler));
+  // }
 
   _generateMarkup() {
     return `
@@ -121,7 +121,7 @@ class RecipeView extends View {
           <use href="${icons}#icon-check"></use>
         </svg>
         <div class="recipe__quantity">${
-          ing.quantity ? new Fraction(ing.quantity) : ''
+          ing.quantity ? new Fraction(ing.quantity).toFraction() : ''
         }</div>
         <div class="recipe__description">
           <span class="recipe__unit">${ing.unit ?? ''}</span>

@@ -19,7 +19,9 @@
   <body>
     <div class="container">
       <header class="header">
-        <img src="src/img/logo.png" alt="Logo" class="header__logo" />
+        <a href="/" data-link
+          ><img src="src/img/logo.png" alt="Logo" class="header__logo"
+        /></a>
         <form class="search">
           <input
             type="text"
@@ -36,21 +38,21 @@
 
         <nav class="nav">
           <ul class="nav__list">
-            <li class="nav__item">
-              <button class="nav__btn nav__btn--add-recipe">
+            <li class="nav__item" data-link>
+              <a class="nav__btn nav__btn--add-recipe" href="/add-recipe">
                 <svg class="nav__icon">
                   <use href="src/img/icons.svg#icon-edit"></use>
                 </svg>
                 <span>Add recipe</span>
-              </button>
+              </a>
             </li>
             <li class="nav__item">
-              <button class="nav__btn nav__btn--bookmarks">
+              <a class="nav__btn nav__btn--bookmarks">
                 <svg class="nav__icon">
                   <use href="src/img/icons.svg#icon-bookmark"></use>
                 </svg>
                 <span>Bookmarks</span>
-              </button>
+              </a>
               <div class="bookmarks">
                 <ul class="bookmarks__list">
                   <div class="message">
@@ -84,7 +86,7 @@
         </nav>
       </header>
 
-      <div class="search-results">
+      <aside class="search-results">
         <div class="results-controls"></div>
         <ul class="results">
           <!-- 
@@ -128,7 +130,7 @@
                     <a class="twitter-link" target="_blank" href="https://twitter.com/jonasschmedtman"> Jonas Schmedtmann </a>. Use for learning or your portfolio. Don't use to teach. Don't claim as
                     your own.
                 </p> -->
-      </div>
+      </aside>
 
       <main class="main">
         <!-- <div class="message">
@@ -256,8 +258,8 @@
     <div class="overlay hidden"></div>
     <div class="add-recipe-window hidden">
       <button class="btn--close-modal">&times;</button>
-      <form class="upload">
-        <!-- <div class="upload__column">
+      <!-- <form class="upload"> -->
+      <!-- <div class="upload__column">
           <h3 class="upload__heading">Recipe data</h3>
           <label>Title</label>
           <input value="TEST23" required name="title" type="text" />
@@ -273,7 +275,7 @@
           <input value="23" required name="servings" type="number" />
         </div> -->
 
-        <!-- <div class="upload__column">
+      <!-- <div class="upload__column">
           <h3 class="upload__heading">Ingredients</h3>
           <label>Ingredient 1</label>
           <input value="0.5,kg,Rice" type="text" required name="ingredient-1" placeholder="Format: 'Quantity,Unit,Description'" />
@@ -289,13 +291,13 @@
           <input type="text" name="ingredient-6" placeholder="Format: 'Quantity,Unit,Description'" />
         </div> -->
 
-        <!-- <button class="btn upload__btn">
+      <!-- <button class="btn upload__btn">
           <svg>
             <use href="src/img/icons.svg#icon-upload-cloud"></use>
           </svg>
           <span>Upload</span>
         </button> -->
-      </form>
+      <!-- </form> -->
     </div>
   </body>
 </html>

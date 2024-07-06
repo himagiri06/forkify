@@ -42,10 +42,28 @@
   opacity: 0;
 }
 
+.add-recipe {
+  width: auto;
+  background-color: $color-grey-light-2;
+  padding: 2rem 6rem;
+  // box-shadow: 0 4rem 6rem rgba(0, 0, 0, 0.25);
+  z-index: 1000;
+  transition: all 0.5s;
+  height: 100%;
+}
+
+.page-title {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: $color-primary;
+}
+
 .upload {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 4rem 6rem;
+  // padding: 5rem 6rem;
 
   &__column {
     display: grid;
