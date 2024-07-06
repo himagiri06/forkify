@@ -49,6 +49,10 @@ body {
   min-height: calc(100vh - 2 * 4vw);
 }
 
+.overflow--hidden {
+  overflow: hidden;
+}
+
 .container {
   max-width: 120rem;
   min-height: 117rem;

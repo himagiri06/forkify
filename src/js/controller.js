@@ -14,13 +14,14 @@ import {
 } from './model.js';
 import recipeView from './views/recipeView';
 import searchView from './views/searchView';
-import resultsView from './views/results_View.js';
+import resultsView from './views/resultsView';
 import paginationView from './views/paginationView';
 import resultsControlsView from './views/resultsControlsView';
 import bookmarksView from './views/bookmarksView';
 import addRecipeView from './views/addRecipeView';
 import messageView from './views/messageView';
 import pageNotFoundView from './views/pageNotFoundView';
+import modalView from './views/modalView.js';
 import { wait } from './helpers.js';
 
 // if (module.hot) {
@@ -30,7 +31,6 @@ import { wait } from './helpers.js';
 /**
  * Initializes the app - Starting point of the app
  */
-
 function init() {
   bookmarksView.addHandlerWindowLoad(controlBookmarksOnWindowLoad);
   recipeView.addHandlerDeleteRecipe(controlRecipeDelete);
@@ -44,7 +44,6 @@ function init() {
   window.addEventListener('popstate', router);
   router();
 }
-
 init();
 
 function controlLinkClick(e) {
@@ -64,6 +63,8 @@ function controlLinkClick(e) {
 }
 
 function navigateTo(url) {
+  console.log('navigate to is called');
+  console.log('url is %s', url);
   history.pushState(null, null, url);
   router();
 }
@@ -139,13 +140,33 @@ async function controlRecipe(id) {
 
 async function controlRecipeDelete(id) {
   try {
-    recipeView.renderSpinner();
+    // recipeView.renderSpinner();
+    modalView.renderSpinner({ disableCancel: true });
+
     await deleteRecipe(id);
-    recipeView.renderMessage('Recipe has been deleted successfully :)');
+
+    // Success message modal
+    modalView.render({
+      title: 'Successfully deleted',
+      content: 'Recipe has been deleted and removed from your bookmarks',
+      type: 'alert',
+      okHandler: navigateNext,
+      cancelHandler: navigateNext,
+    });
+
+    // Render updated bookmarks
     bookmarksView.render(state.bookmarks);
   } catch (error) {
     recipeView.renderError(error.message);
   }
+}
+
+function navigateNext() {
+  return state.bookmarks.length > 0
+    ? navigateTo(`/recipes#${state.bookmarks.at(0).id}`)
+    : state.search.recipes.length
+    ? navigateTo(`/recipes#${state.search.recipes.at(0).id}`)
+    : navigateTo('/');
 }
 
 function controlServings(servings) {
@@ -213,28 +234,20 @@ function controlAddRecipe() {
 
 async function controlAddRecipeSubmit(recipe) {
   try {
-    // render spinner in recipe view
-    addRecipeView.renderSpinner();
-
     // Upload new recipe
     await uploadRecipe(recipe);
 
-    // Render newly added recipe
-    // recipeView.render(state.recipe);
+    // Success message modal
+    modalView.render({
+      title: 'Successfully added',
+      content: 'New recipe has been saved and added to your bookmarks',
+      type: 'alert',
+      okHandler: navigateTo.bind(null, `/recipes#${state.recipe.id}`),
+      cancelHandler: navigateTo.bind(null, `/recipes#${state.recipe.id}`),
+    });
 
-    // Success message
-    addRecipeView.renderMessage();
-
-    // setTimeout(function () {
-    //   addRecipeView.hideWindow();
-    // }, MODAL_CLOSE_SECS * 1000);
-
+    // Render updated bookmarks
     bookmarksView.render(state.bookmarks);
-
-    // Navigate to new recipe page after 2 seconds
-    await wait(2).then(() => navigateTo(`/recipes#${state.recipe.id}`));
-    // Change ID in url
-    // window.history.pushState(null, '', `#${state.recipe.id}`);
   } catch (error) {
     addRecipeView.renderError(error.message);
   }

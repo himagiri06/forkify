@@ -41,6 +41,26 @@ class AddRecipeView extends View {
   //   this._overlay.addEventListener('click', this.hideWindow.bind(this));
   // }
 
+  _disable() {
+    this._parentElement
+      .querySelectorAll('input')
+      .forEach(el => (el.disabled = true));
+
+    this._parentElement
+      .querySelectorAll('button')
+      .forEach(el => (el.disabled = true));
+  }
+
+  // _enable() {
+  //   this._parentElement
+  //     .querySelectorAll('input')
+  //     .forEach(el => (el.disabled = false));
+
+  //   this._parentElement
+  //     .querySelectorAll('button')
+  //     .forEach(el => (el.disabled = false));
+  // }
+
   _showValidationError() {
     const errorEl = this._parentElement.querySelector('.upload__error');
     if (errorEl) errorEl.remove();
@@ -142,6 +162,7 @@ class AddRecipeView extends View {
 
         const data = this._constructFormDataJSON(formObject, ingredients);
 
+        this._disable();
         handler?.(data);
       }.bind(this)
     );
