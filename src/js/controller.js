@@ -12,15 +12,15 @@ import {
   deleteRecipe,
   removeRecipeBookmark,
 } from './model.js';
-import recipeView from './views/recipeView.js';
-import searchView from './views/searchView.js';
-import resultsView from './views/resultsView.js';
-import paginationView from './views/paginationView.js';
-import resultsControlsView from './views/resultsControlsView.js';
-import bookmarksView from './views/bookmarksView.js';
-import addRecipeView from './views/addRecipeView.js';
-import messageView from './views/messageView.js';
-import pageNotFoundView from './views/pageNotFoundView.js';
+import recipeView from './views/recipeView';
+import searchView from './views/searchView';
+import resultsView from './views/resultsView';
+import paginationView from './views/paginationView';
+import resultsControlsView from './views/resultsControlsView';
+import bookmarksView from './views/bookmarksView';
+import addRecipeView from './views/addRecipeView';
+import messageView from './views/messageView';
+import pageNotFoundView from './views/pageNotFoundView';
 import { wait } from './helpers.js';
 
 // if (module.hot) {
