@@ -14,7 +14,7 @@ import {
 } from './model.js';
 import recipeView from './views/recipeView';
 import searchView from './views/searchView';
-import resultsView from './views/resultsView';
+import resultsView from './views/results_View.js';
 import paginationView from './views/paginationView';
 import resultsControlsView from './views/resultsControlsView';
 import bookmarksView from './views/bookmarksView';
