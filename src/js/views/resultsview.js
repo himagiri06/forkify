@@ -1,7 +1,7 @@
 import ListView from './listView';
 import previewView from './PreviewView';
 
-class Resultsview extends ListView {
+class ResultsView extends ListView {
   _parentElement = document.querySelector('.results');
   _errorMessage = 'No results to display :)';
   _message = '';
@@ -12,4 +12,4 @@ class Resultsview extends ListView {
       .join('');
   }
 }
-export default new Resultsview();
+export default new ResultsView();
