@@ -49,6 +49,7 @@ init();
 
 function controlLinkClick(e) {
   const routeLink = e.target.closest('[data-link]');
+
   if (!routeLink) return;
 
   e.preventDefault();
