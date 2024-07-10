@@ -16,30 +16,17 @@ class AddRecipeView extends View {
   constructor() {
     super();
     this.render(null, true, false);
-    console.log(this._form);
-    // this._addHandlerShowWindow();
-    // this._addHandlerHideWindow();
+
+    this._parentElement.addEventListener(
+      'click',
+      function (e) {
+        const btnAddIngreients = e.target.closest('.btn--add-ingredients');
+        if (!btnAddIngreients) return;
+
+        this._addNewIngredientRow();
+      }.bind(this)
+    );
   }
-
-  // showWindow() {
-  //   this.render(null, { render: true, validate: false });
-  //   this._window.classList.remove('hidden');
-  //   this._overlay.classList.remove('hidden');
-  // }
-
-  // hideWindow() {
-  //   this._window.classList.add('hidden');
-  //   this._overlay.classList.add('hidden');
-  // }
-
-  // _addHandlerShowWindow() {
-  //   this._btnOpen.addEventListener('click', this.showWindow.bind(this));
-  // }
-
-  // _addHandlerHideWindow() {
-  //   this._btnClose.addEventListener('click', this.hideWindow.bind(this));
-  //   this._overlay.addEventListener('click', this.hideWindow.bind(this));
-  // }
 
   _disable() {
     this._parentElement
@@ -50,16 +37,6 @@ class AddRecipeView extends View {
       .querySelectorAll('button')
       .forEach(el => (el.disabled = true));
   }
-
-  // _enable() {
-  //   this._parentElement
-  //     .querySelectorAll('input')
-  //     .forEach(el => (el.disabled = false));
-
-  //   this._parentElement
-  //     .querySelectorAll('button')
-  //     .forEach(el => (el.disabled = false));
-  // }
 
   _showValidationError() {
     const errorEl = this._parentElement.querySelector('.upload__error');
@@ -167,36 +144,7 @@ class AddRecipeView extends View {
       }.bind(this)
     );
   }
-  // _generateMarkup() {
-  //   return `
-  //   <div class="add-recipe">
-  //     <h2>Add recipe form</h2>
-  //     <form class="upload">
-  //       <div class="upload__column">
-  //         <h3 class="upload__heading">Recipe data</h3>
-  //         <label>Title</label>
-  //         <input value="TEST 23" required name="title" type="text" />
-  //         <label>URL</label>
-  //         <input value="TEST 23" required name="sourceUrl" type="text" />
-  //         <label>Image URL</label>
-  //         <input value="TEST 23" required name="image" type="text" />
-  //         <label>Publisher</label>
-  //         <input value="TEST 23" required name="publisher" type="text" />
-  //         <label>Prep time</label>
-  //         <input value="23" required name="cookingTime" type="number" />
-  //         <label>Servings</label>
-  //         <input value="23" required name="servings" type="number" />
-  //       </div>
-  //       <div class="upload__column ingredients">
-  //         <h3 class="upload__heading">Ingredients</h3>
-  //         ${Array.from({ length: this._numIngredients }, (_, i) =>
-  //           this._generateIngredientGroupMarkup(i)
-  //         ).join('')}
-  //       </div>
-  //     </form>
-  //   </div>
-  //   `;
-  // }
+
   setFocus(inputName) {
     const inputEl = this._parentElement.querySelector(
       `input[name="${inputName}"]`
@@ -206,6 +154,20 @@ class AddRecipeView extends View {
       const length = inputEl.value.length;
       inputEl.setSelectionRange(length, length);
     }
+  }
+
+  _addNewIngredientRow() {
+    const ingredientRows =
+      this._parentElement.querySelectorAll('.ingredient__row');
+
+    const numIngredients = Array.from(ingredientRows).length;
+
+    const newIngredientRowMarkup =
+      this._generateIngredientGroupMarkup(numIngredients);
+
+    const ingredientsEl = this._parentElement.querySelector('.ingredients');
+    ingredientsEl.insertAdjacentHTML('beforeend', newIngredientRowMarkup);
+    this._numIngredients++;
   }
 
   _generateMarkup() {
@@ -230,12 +192,19 @@ class AddRecipeView extends View {
           </div>
 
           <div class="upload__column ingredients">
-            <h3 class="upload__heading">Ingredients</h3>
+            <div class="upload__heading--row">
+              <h3 class="upload__heading">Ingredients</h3>
+              <button type="button" class="btn--tiny btn--add-ingredients">
+                <svg>
+                  <use href="${icons}#icon-plus-circle"></use>
+                </svg>
+              </button>
+            </div>
             ${Array.from({ length: this._numIngredients }, (_, i) =>
               this._generateIngredientGroupMarkup(i)
             ).join('')}
           </div>
-          <button class="btn upload__btn">
+          <button type="submit" class="btn upload__btn">
             <svg>
               <use href="${icons}#icon-upload-cloud"></use>
             </svg>
@@ -253,6 +222,7 @@ class AddRecipeView extends View {
       ).join('')}
     `;
   }
+
   _generateIngredientGroupMarkup(id) {
     return `
       <div class="ingredient__row">
@@ -275,6 +245,7 @@ class AddRecipeView extends View {
       </div>
     `;
   }
+
   _generateValidationErrorMarkup(errorMessage = this._errorMessage) {
     return `
       <div class="upload__error">
