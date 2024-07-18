@@ -99,6 +99,10 @@
     transform: translateY(-1px);
   }
 
+  &__delete {
+    margin-right: 1.75rem;
+  }
+
   &__user-generated {
     background-color: darken($color-grey-light-2, 2%);
 

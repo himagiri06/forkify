@@ -60,17 +60,22 @@ class RecipeView extends View {
             </div>
           </div>
 
-          ${
-            this._data.key
-              ? `<button class="btn--delete"> Delete
-          </button>`
-              : ''
-          }
           <div class="recipe__user-generated ${this._data.key ? '' : 'hidden'}">
             <svg>
               <use href="${icons}#icon-user"></use>
             </svg>
           </div>
+          ${
+            this._data.key
+              ? `
+              <button class="btn--round recipe__delete">
+                <svg>
+                  <use href="${icons}#icon-trash"></use>
+                </svg>
+              </button>
+              `
+              : ''
+          }
           <button class="btn--round btn--bookmark">
             <svg class="">
               <use 
@@ -160,7 +165,7 @@ class RecipeView extends View {
     this._parentElement.addEventListener(
       'click',
       function (e) {
-        const btn = e.target.closest('.btn--delete');
+        const btn = e.target.closest('.recipe__delete');
         if (!btn) return;
         handler?.(this._data.id);
       }.bind(this)

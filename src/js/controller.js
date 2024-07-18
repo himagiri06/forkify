@@ -33,7 +33,7 @@ import { wait } from './helpers.js';
  */
 function init() {
   bookmarksView.addHandlerWindowLoad(controlBookmarksOnWindowLoad);
-  recipeView.addHandlerDeleteRecipe(controlRecipeDelete);
+  recipeView.addHandlerDeleteRecipe(controlRecipeDeleteClick);
   recipeView.addHandlerUpdateServings(controlServings);
   recipeView.addHandlerBookmark(controlBookmark);
   searchView.addHandlerSearch(controlSearchResults);
@@ -63,8 +63,6 @@ function controlLinkClick(e) {
 }
 
 function navigateTo(url) {
-  console.log('navigate to is called');
-  console.log('url is %s', url);
   history.pushState(null, null, url);
   router();
 }
@@ -136,6 +134,23 @@ async function controlRecipe(id) {
     removeRecipeBookmark(state.error.recipeID);
     bookmarksView.render(state.bookmarks);
   }
+}
+
+function controlRecipeDeleteClick(id) {
+  modalView.render({
+    title: 'Delete Recipe',
+    content:
+      'This action will delete this recipe permanently. Are you sure you want to delete?',
+    type: 'confirmation',
+    okText: 'Delete',
+    okHandler: createClosureCallback(controlRecipeDelete, id),
+  });
+}
+
+function createClosureCallback(fn, ...args) {
+  return function () {
+    fn(...args);
+  };
 }
 
 async function controlRecipeDelete(id) {

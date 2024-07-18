@@ -10,6 +10,10 @@ class ModalView extends View {
   _okText;
   _cancelText;
   _type;
+  _okHandler;
+  _okHandlerArgs;
+  _cancelHandler;
+  _cancelHandlerArgs;
 
   constructor() {
     super();
@@ -19,6 +23,8 @@ class ModalView extends View {
     this._okText = 'Ok';
     this._cancelText = 'Cancel';
     this._type = 'alert';
+    this._okHandlerArgs = [];
+    this._cancelHandler = [];
 
     this._parentElement.addEventListener(
       'click',
@@ -27,8 +33,8 @@ class ModalView extends View {
         if (!btn) return;
 
         const okBtn = btn.classList.contains('modal__btn--ok');
-        const cancelBtn = btn.classList.contains('modal__btn--ok');
-        if (okBtn) this._data.okHandler?.();
+        const cancelBtn = btn.classList.contains('modal__btn--cancel');
+        if (okBtn) this._okHandler?.();
         if (cancelBtn) this._data.cancelHandler?.();
         this._close();
       }.bind(this)
@@ -45,12 +51,37 @@ class ModalView extends View {
     );
   }
 
+  _handlerTypeCheck(handlerProp) {
+    let handler;
+    let args;
+
+    if (typeof handlerProp === 'object') {
+      handler = handlerProp.handler;
+      args = handlerProp.args;
+    }
+    if (typeof handlerProp === 'function') {
+      handler = handlerProp;
+    }
+
+    return { handler, args };
+  }
   /**
    * Overrides the render method in parent class
    * @param {*} data data object {title, content, okText, cancelText, okHandler, cancelHandler} to render the modal view; if no data passed in, defaults will be applied
    */
   render(data) {
     this._data = data;
+
+    const ok = this._handlerTypeCheck(this._data.okHandler);
+    this._okHandler = ok.handler;
+    this._okHandlerArgs = ok.args ?? [];
+
+    console.dir(this._okHandler);
+
+    const cancel = this._handlerTypeCheck(this._data.cancelHandler);
+    this._cancelHandler = cancel.handler;
+    this._cancelHandlerArgs = cancel.args ?? [];
+
     const markup = this._generateMarkup();
     this._clear();
     this._show();
@@ -95,7 +126,7 @@ class ModalView extends View {
 
     return `
       <h3>${title}</h3>
-      <div class="horinzontal--ruler"></div>
+      <div class="horizontal--ruler"></div>
       <p>${content}</p>
       <div class="modal__btn--group">
         ${

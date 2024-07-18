@@ -99,22 +99,22 @@
   }
 }
 
-.btn--delete {
-  cursor: pointer;
-  padding: 1rem 2rem;
-  background-image: $gradient;
-  border-radius: 1rem;
-  color: #fff;
-  border: none;
-  transition: all 0.2s;
-  margin-left: auto;
-  margin-right: 1.75rem;
+// .btn--delete {
+//   cursor: pointer;
+//   padding: 1rem 2rem;
+//   background-image: $gradient;
+//   border-radius: 1rem;
+//   color: #fff;
+//   border: none;
+//   transition: all 0.2s;
+//   margin-left: auto;
+//   margin-right: 1.75rem;
 
-  &:hover,
-  &:active {
-    box-shadow: 0 0 5px $color-grad-2;
-  }
-}
+//   &:hover,
+//   &:active {
+//     box-shadow: 0 0 5px $color-grad-2;
+//   }
+// }
 .btn--round {
   background-image: $gradient;
   border-radius: 50%;
